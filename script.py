@@ -23,8 +23,7 @@ def file_Name_Generator(file_name):
 for file_path in os.listdir(dir_path):
     if os.path.isfile(os.path.join(dir_path, file_path)) and (".pdf" in file_path):
         for file in os.listdir(dir_path):
-            if os.path.isfile(os.path.join(dir_path, file_path)) and (".pdf" in
-            file) and (file != file_path):
+            if os.path.isfile(os.path.join(dir_path, file_path)) and (".pdf" in file) and (file != file_path):
                 res.append(file_Name_Generator(file_path))
                 res.append(file_Name_Generator(file))
 for i in res:
