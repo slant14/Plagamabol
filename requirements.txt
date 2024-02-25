@@ -1,0 +1,5 @@
+pip install flask
+pip install nltk
+pip install scikit-learn
+pip install Levenshtein
+pip install PyPDF2
