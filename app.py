@@ -23,10 +23,12 @@ app.static_folder = 'static'
 
 
 class Plag_Case:
-    def __init__(self, first, second, cosine):
+    def __init__(self, first, second, cosine, jaccard, lev):
         self.first = first
         self.second = second
         self.cosine = cosine
+        self.jaccard = jaccard
+        self.lev = lev
 
 stop_words = set(stopwords.words('english'))
 #define a function to remove stop words
@@ -292,12 +294,19 @@ def get_directory_files(dir_path):
 
 def get_student_name(file_name):
     name = file_name.split('_')
-    return name[0] + ' ' + name[1]
+    if len(name) == 1:
+        return name
+    if name[1].lower() == 'problem':
+        return name[0]
+    else:
+        return name[0] + ' ' + name[1]
 
 @app.route('/test')
 def compare_All():
+    method = request.args.get('m')
+    print(method)
     #directory = request.form['folder_path']
-    directory = "/home/mahmoud/Desktop/DSAI03/Valeriia Neganova_359185_assignsubmission_file_/"
+    directory = "/home/mahmoud/Desktop/week5/submissions/"
     directory_files = get_directory_files(directory)
 
     final_cases = []
@@ -308,19 +317,36 @@ def compare_All():
             remaining_files.remove(case)
         remaining_files.remove(file)
         done_cases.append(file)
-        filename = '/home/mahmoud/Desktop/DSAI03/Valeriia Neganova_359185_assignsubmission_file_/' + str(file)
+        filename = directory + str(file)
         #return filename
-        text1 = get_pdf_text(filename)
+        try:
+            text1 = get_pdf_text(filename)
+        except:
+            text1 = '.'
 
         for sub in remaining_files:
-            sub_dir = '/home/mahmoud/Desktop/DSAI03/Valeriia Neganova_359185_assignsubmission_file_/' + sub
-            text2= get_pdf_text(sub_dir)
+            sub_dir = directory + sub
+            try:
+                text2= get_pdf_text(sub_dir)
+            except:
+                text2 = '.'
             text1_new = remove_stop_words(text1)
             text2_new = remove_stop_words(text2)
             cosine = get_cosine_similarity(text1_new, text2_new)
-            final_cases.append(Plag_Case(get_student_name(file), get_student_name(sub), cosine))
-    
-    final_cases.sort(key=lambda x: x.cosine, reverse=False)
-    for case in final_cases:
-        print(case.cosine)
-    return(directory_files)
+            jaccard = get_jaccard_distance(text1_new, text2_new)
+            lev = get_edit_distance(text1_new, text2_new)
+            final_cases.append(Plag_Case(get_student_name(file), get_student_name(sub), cosine, jaccard, lev))
+    if method == 'cos': 
+        final_cases.sort(key=lambda x: x.cosine, reverse=True)
+        for case in final_cases:
+            print(case.cosine)
+        return render_template('cosine.html', results=final_cases)
+    elif method == 'jac':
+        final_cases.sort(key=lambda x: x.jaccard, reverse=True)
+        return render_template('jaccard.html', results=final_cases)
+    elif method == 'lev':
+        final_cases.sort(key=lambda x: x.lev, reverse=False)
+        return render_template('lev.html', results=final_cases)
+    else:
+        return "Wrong <method>, allowed methods are: cos, jac, lev ..."
+
