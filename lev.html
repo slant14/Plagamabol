@@ -1,0 +1,8 @@
+<h5> Comparision method : Levenshtein Distance  </h5>
+
+<ol>
+{% for res in results  %}
+    <li> {{ res.first  }} - {{ res.second  }} - {{ res.lev }}</li>
+{% endfor %}
+</ol>
+

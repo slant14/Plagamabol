@@ -1,0 +1,7 @@
+<h5> Comparision method : Cosine Similarity  </h5>
+
+<ol>
+{% for res in results  %}
+    <li> {{ res.first  }} - {{ res.second  }} - {{ res.cosine }}</li>
+{% endfor %}
+</ol>
