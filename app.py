@@ -5,7 +5,7 @@ from collections import Counter
 from math import sqrt
 import nltk
 nltk.download('stopwords')
-nltk.download('punkt')
+nltk.download('punkt_tab')
 from nltk.corpus import stopwords
 from sklearn.metrics import jaccard_score
 from nltk import sent_tokenize
@@ -135,12 +135,10 @@ def get_edit_distance(text1, text2):
     # split the text into sentences
     sentences1 = sent_tokenize(text1)
     sentences2 = sent_tokenize(text2)
-
-    # compute the average edit distance of the sentences
+    
     distance = sum(edit_distance(s1, s2) for s1, s2 in zip(sentences1, sentences2)) / len(sentences1)
     
     return distance
-
 # create a set of stop words
 
 
@@ -306,7 +304,7 @@ def compare_All():
     method = request.args.get('m')
     print(method)
     #directory = request.form['folder_path']
-    directory = "/home/mahmoud/Desktop/week5/submissions/"
+    directory = "C:\\Users\\Mahmoud\\Desktop\\GradingDSA\\Week8\\submissions\\subs\\"
     directory_files = get_directory_files(directory)
 
     final_cases = []
@@ -332,6 +330,10 @@ def compare_All():
                 text2 = '.'
             text1_new = remove_stop_words(text1)
             text2_new = remove_stop_words(text2)
+            if (len(text1_new) == 0):
+                text1_new = text1
+            if (len(text2_new) == 0):
+                text2_new = text2
             cosine = get_cosine_similarity(text1_new, text2_new)
             jaccard = get_jaccard_distance(text1_new, text2_new)
             lev = get_edit_distance(text1_new, text2_new)
